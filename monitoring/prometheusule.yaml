@@ -1,0 +1,60 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: longhorn-backup-alerter
+  namespace: longhorn-system
+  labels:
+    release: rancher-monitoring
+spec:
+  groups:
+    - name: longhorn-backup-alerter.rules
+      rules:
+        - alert: LonghornBackupAlerterDown
+          expr: up{job=~".*longhorn-backup-alerter.*"} == 0 or absent(longhorn_backup_alerter_scrape_success)
+          for: 10m
+          labels:
+            severity: critical
+            component: longhorn-backup
+          annotations:
+            summary: Longhorn backup alerter is unavailable
+            description: Prometheus has not received metrics from the Longhorn backup alerter for at least 10 minutes.
+
+        - alert: LonghornBackupError
+          expr: max by (namespace, backup, volume, state) (longhorn_backup_alerter_backup_state{state=~"error|faulted|failed|unknown"}) == 1
+          for: 5m
+          labels:
+            severity: critical
+            component: longhorn-backup
+          annotations:
+            summary: Longhorn backup {{ $labels.backup }} failed
+            description: Backup {{ $labels.backup }} for volume {{ $labels.volume }} is in state {{ $labels.state }}.
+
+        - alert: LonghornBackupStuckInProgress
+          expr: (time() - longhorn_backup_alerter_backup_created_timestamp_seconds) > 7200 and on(namespace, backup, volume) max by(namespace, backup, volume) (longhorn_backup_alerter_backup_state{state=~"inprogress|in_progress|pending|started"}) == 1
+          for: 15m
+          labels:
+            severity: warning
+            component: longhorn-backup
+          annotations:
+            summary: Longhorn backup {{ $labels.backup }} appears stuck
+            description: Backup {{ $labels.backup }} for volume {{ $labels.volume }} has remained active for more than two hours.
+
+        - alert: LonghornBackupProgressStalled
+          expr: max_over_time(longhorn_backup_alerter_backup_progress_percent[30m]) - min_over_time(longhorn_backup_alerter_backup_progress_percent[30m]) == 0 and longhorn_backup_alerter_backup_progress_percent > 0 and longhorn_backup_alerter_backup_progress_percent < 100
+          for: 30m
+          labels:
+            severity: warning
+            component: longhorn-backup
+          annotations:
+            summary: Longhorn backup {{ $labels.backup }} progress is stalled
+            description: Backup transfer progress for {{ $labels.backup }} on volume {{ $labels.volume }} has not changed for at least 30 minutes.
+
+        - alert: LonghornNoRecentSuccessfulBackup
+          expr: time() - longhorn_backup_alerter_volume_last_successful_backup_timestamp_seconds > 86400
+          for: 30m
+          labels:
+            severity: warning
+            component: longhorn-backup
+          annotations:
+            summary: No recent successful Longhorn backup for {{ $labels.volume }}
+            description: Volume {{ $labels.volume }} has no successful backup recorded during the last 24 hours. Adjust this threshold to match the backup policy.
