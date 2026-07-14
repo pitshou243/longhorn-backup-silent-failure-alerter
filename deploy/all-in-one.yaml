@@ -1,0 +1,99 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: longhorn-backup-alerter
+  namespace: longhorn-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: longhorn-backup-alerter
+  namespace: longhorn-system
+rules:
+  - apiGroups: ["longhorn.io"]
+    resources: ["backups", "recurringjobs"]
+    verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: longhorn-backup-alerter
+  namespace: longhorn-system
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: longhorn-backup-alerter
+subjects:
+  - kind: ServiceAccount
+    name: longhorn-backup-alerter
+    namespace: longhorn-system
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: longhorn-backup-alerter
+  namespace: longhorn-system
+  labels:
+    app.kubernetes.io/name: longhorn-backup-alerter
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: longhorn-backup-alerter
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: longhorn-backup-alerter
+    spec:
+      serviceAccountName: longhorn-backup-alerter
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: exporter
+          image: ghcr.io/REPLACE_ME/longhorn-backup-silent-failure-alerter:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: LONGHORN_NAMESPACE
+              value: longhorn-system
+            - name: PORT
+              value: "9501"
+          ports:
+            - name: metrics
+              containerPort: 9501
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: metrics
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: metrics
+          resources:
+            requests:
+              cpu: 10m
+              memory: 40Mi
+            limits:
+              cpu: 100m
+              memory: 128Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+            readOnlyRootFilesystem: true
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: longhorn-backup-alerter
+  namespace: longhorn-system
+  labels:
+    app.kubernetes.io/name: longhorn-backup-alerter
+spec:
+  selector:
+    app.kubernetes.io/name: longhorn-backup-alerter
+  ports:
+    - name: metrics
+      port: 9501
+      targetPort: metrics
