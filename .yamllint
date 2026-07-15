@@ -1,0 +1,16 @@
+---
+extends: default
+
+rules:
+  document-start:
+    present: true
+
+  line-length:
+    max: 300
+    level: warning
+
+  truthy:
+    allowed-values:
+      - "true"
+      - "false"
+    check-keys: false
