@@ -1,3 +1,11 @@
+![CI](https://github.com/pitshou243/longhorn-backup-silent-failure-alerter/actions/workflows/ci.yaml/badge.svg)
+
+![Container](https://github.com/pitshou243/longhorn-backup-silent-failure-alerter/actions/workflows/container.yaml/badge.svg)
+
+![License](https://img.shields.io/github/license/pitshou243/longhorn-backup-silent-failure-alerter)
+
+![Release](https://img.shields.io/github/v/release/pitshou243/longhorn-backup-silent-failure-alerter)
+
 # Longhorn Backup Silent-Failure Alerter
 
 Prometheus alerts and a Grafana dashboard for Longhorn backups that fail, stall, or stop reaching the configured S3/NFS backup target.
