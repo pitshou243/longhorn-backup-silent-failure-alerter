@@ -1,0 +1,31 @@
+name: Feature Request
+description: Suggest an enhancement.
+title: "[Feature]: "
+labels:
+  - enhancement
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for helping improve this project.
+
+  - type: input
+    id: summary
+    attributes:
+      label: Feature Summary
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem would this solve?
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
