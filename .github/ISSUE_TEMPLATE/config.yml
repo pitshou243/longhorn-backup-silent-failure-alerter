@@ -1,0 +1,10 @@
+blank_issues_enabled: false
+
+contact_links:
+  - name: Discussions
+    url: https://github.com/pitshou243/longhorn-backup-silent-failure-alerter/discussions
+    about: Ask questions or discuss ideas.
+
+  - name: Documentation
+    url: https://github.com/pitshou243/longhorn-backup-silent-failure-alerter/blob/main/README.md
+    about: Read the project documentation before opening an issue.
