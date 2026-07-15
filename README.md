@@ -48,6 +48,8 @@ Review the thresholds before production use, especially the 24-hour policy alert
 
 ## Build and publish
 
+Note: This is only in case you want to move this to your own repo.
+
 Push this repository to GitHub. The container workflow publishes images to:
 
 ```text
