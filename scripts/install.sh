@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
-IMAGE="${IMAGE:-ghcr.io/REPLACE_ME/longhorn-backup-silent-failure-alerter:latest}"
+IMAGE="${IMAGE:-ghcr.io/pitshou243/longhorn-backup-silent-failure-alerter:v1.0.0}"
 kubectl apply -f deploy/all-in-one.yaml
 kubectl -n longhorn-system set image deployment/longhorn-backup-alerter exporter="$IMAGE"
 kubectl apply -f monitoring/servicemonitor.yaml
