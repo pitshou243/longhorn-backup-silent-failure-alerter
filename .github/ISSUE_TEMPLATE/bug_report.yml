@@ -1,0 +1,66 @@
+name: Bug Report
+description: Report a bug or unexpected behavior.
+title: "[Bug]: "
+labels:
+  - bug
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for reporting a bug!
+
+  - type: input
+    id: longhorn-version
+    attributes:
+      label: Longhorn Version
+      placeholder: 1.10.0
+
+  - type: input
+    id: kubernetes-version
+    attributes:
+      label: Kubernetes Version
+      placeholder: v1.32.5
+
+  - type: input
+    id: exporter-version
+    attributes:
+      label: Exporter Version
+      placeholder: v1.0.0
+
+  - type: dropdown
+    id: backup-target
+    attributes:
+      label: Backup Target
+      options:
+        - S3
+        - NFS
+        - SMB
+        - Azure Blob
+        - Other
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Describe the problem
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs
+      render: shell
+
+  - type: textarea
+    id: prometheus
+    attributes:
+      label: Prometheus Alerts
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional information
