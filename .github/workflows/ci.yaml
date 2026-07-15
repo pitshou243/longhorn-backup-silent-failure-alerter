@@ -1,19 +1,40 @@
 ---
-name: CI
+name: Validate
+
 on:
-  pull_request:
   push:
-    branches: [main]
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
 jobs:
   validate:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - name: Check out repository
+        uses: actions/checkout@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
         with:
-          python-version: '3.12'
-      - run: python -m py_compile src/exporter.py
-      - run: python -m json.tool grafana/longhorn-backup-dashboard.json >/dev/null
-      - uses: ibiqlik/action-yamllint@v3
+          python-version: "3.12"
+
+      - name: Validate Python
+        run: python -m py_compile src/exporter.py
+
+      - name: Validate Grafana dashboard JSON
+        run: |
+          python -m json.tool \
+            grafana/longhorn-backup-dashboard.json \
+            >/dev/null
+
+      - name: Validate YAML
+        uses: ibiqlik/action-yamllint@v3
         with:
-          file_or_dir: deploy monitoring .github/workflows
+          config_file: .yamllint
+          file_or_dir: .
