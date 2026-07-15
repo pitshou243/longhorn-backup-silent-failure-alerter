@@ -1,0 +1,26 @@
+name: Question
+description: Ask a question about installation or usage.
+title: "[Question]: "
+labels:
+  - question
+
+body:
+  - type: input
+    id: version
+    attributes:
+      label: Exporter Version
+
+  - type: textarea
+    id: question
+    attributes:
+      label: Question
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Information
